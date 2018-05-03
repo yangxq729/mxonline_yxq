@@ -18,9 +18,9 @@ class UserProfile(AbstractUser):
     #地址
     address = models.CharField(max_length=100,verbose_name=u"地址",default="")
     #电话
-    mobile = models.CharField(max_length=11,null=True,blank=True)
+    mobile = models.CharField(max_length=11,null=True,blank=True,verbose_name=u"电话")
     #头像 默认使用default.png
-    image = models.ImageField(upload_to="image/%Y/%m",default=u"image/default.jpg",max_length=100)
+    image = models.ImageField(upload_to="image/%Y/%m",default=u"image/default.jpg",max_length=100,verbose_name=u"头像")
 
     # meta信息，即后台栏目名
     class Meta:
@@ -38,11 +38,13 @@ class EmailVerifyRecord(models.Model):
     )
     code = models.CharField(max_length=20,verbose_name=u"验证码")
     email = models.EmailField(max_length=50,verbose_name=u"邮箱")
-    send_type = models.CharField(choices=SEND_CHIOCES,max_length=10)
-    send_time = models.DateTimeField(default=datetime.now)
+    send_type = models.CharField(choices=SEND_CHIOCES,max_length=10,verbose_name=u"验证码类型")
+    send_time = models.DateTimeField(default=datetime.now,verbose_name=u"发送时间")
     class Meta:
         verbose_name = "邮箱验证码"
         verbose_name_plural = verbose_name
+    def __str__(self):
+        return '{0}({1})'.format(self.code,self.email)
 
 #轮播图model
 class Banner(models.Model):
