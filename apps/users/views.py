@@ -5,6 +5,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 
 from users.models import UserProfile
+from .forms import LoginForm
 
 # Create your views here.
 class RegisterView(View):
@@ -22,20 +23,38 @@ class CustomBackend(ModelBackend):
             return None
 
 
-def user_login(request):
-    if request.method == "POST":
-        user_name = request.POST.get("username", "")
-        pass_word = request.POST.get("password", "")
-        # 新增, 利用django自带的authenticate方法来确认这个用户是否合法, 如果合法, 则user是一个非空对象.
-        user = authenticate(username=user_name, password=pass_word)
-        if user is not None:
-            #django自带的login方法,
-            login(request,user)
-            #登录成功后返回首页
-            return render(request, "index.html")
+# def user_login(request):
+#     if request.method == "POST":
+#         user_name = request.POST.get("username", "")
+#         pass_word = request.POST.get("password", "")
+#         # 新增, 利用django自带的authenticate方法来确认这个用户是否合法, 如果合法, 则user是一个非空对象.
+#         user = authenticate(username=user_name, password=pass_word)
+#         if user is not None:
+#             #django自带的login方法,
+#             login(request,user)
+#             #登录成功后返回首页
+#             return render(request, "index.html")
+#         else:
+#             return render(request, "login.html",{"msg": "用户名或密码错误！"})
+#     elif request.method == "GET":
+#         # render 就是渲染html返回用户
+#         return render(request, "login.html",{})
+
+class LoginView(View):
+    def get(self,request):
+        return render(request,"login.html",{})
+    def post(self,request):
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
+            user_name = request.POST.get("username", "")
+            pass_word = request.POST.get("password", "")
+            # 新增, 利用django自带的authenticate方法来确认这个用户是否合法, 如果合法, 则user是一个非空对象.
+            user = authenticate(username=user_name, password=pass_word)
+            if user is not None:
+                login(request, user)  # django自带的login方法,
+                return render(request, "index.html")  # 登录成功后返回首页
+            else:
+                return render(request, "login.html", {"msg": "用户名或密码错误！"})
         else:
-            return render(request, "login.html",{"msg": "用户名或密码错误！"})
-    elif request.method == "GET":
-        # render 就是渲染html返回用户
-        return render(request, "login.html",{})
+            return render(request,"login.html", {"login_form": login_form})
 
