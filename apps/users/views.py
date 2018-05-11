@@ -5,13 +5,14 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 
 from users.models import UserProfile
-from .forms import LoginForm
+from .forms import LoginForm,RegisterForm
 
 # Create your views here.
 class RegisterView(View):
     '''用户注册'''
     def get(self,request):
-        return render(request,'register.html')
+        register_form = RegisterForm()
+        return render(request,'register.html', {'register_form': register_form})
 
 class CustomBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
